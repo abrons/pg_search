@@ -23,7 +23,7 @@ module PgSearch
       {
         :select => "#{quoted_table_name}.*, (#{rank}) AS pg_search_rank",
         :conditions => conditions,
-        :order => "pg_search_rank DESC, #{primary_key} ASC",
+        :order => "pg_search_rank DESC, #{order_within_rank}",
         :joins => joins
       }
     end
@@ -32,6 +32,10 @@ module PgSearch
 
     def conditions
       @feature_names.map { |feature_name| "(#{sanitize_sql_array(feature_for(feature_name).conditions)})" }.join(" OR ")
+    end
+
+    def order_within_rank
+      @config.order_within_rank || "#{primary_key} ASC"
     end
 
     def primary_key
